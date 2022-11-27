@@ -1,7 +1,9 @@
 """
 @file
-@brief Direct calls to libraries :epkg:`BLAS` and :epkg:`LAPACK`.
+@brief cython + onnxruntime.
 """
+from ctypes import cdll
+import sys
 from libc.stdlib cimport calloc, free
 from libc.string cimport memcpy
 from libc.stdio cimport printf
@@ -18,8 +20,12 @@ cdef extern from "ort_interface.h":
     cdef void OrtInitialize()
     
 
-cdef void initialize():
+def initialize():
     """
     Initializes :epkg:`onnxruntime` C API.
     """
+    if sys.platform == "win32":
+        cdll.LoadLibrary("onnxruntime.dll")
+    else:
+        cdll.LoadLibrary("onnxruntime.so")
     OrtInitialize()
