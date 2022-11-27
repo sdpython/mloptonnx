@@ -1,0 +1,84 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cimg/python:3.11.0
+    
+    working_directory: ~/repo
+    
+    steps:
+      - checkout
+      - run: python --version
+
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}
+          - v2-dependencies-
+
+      - run:
+          name: Install pandoc
+          command: |
+                    sudo apt-get update 
+                    wget https://github.com/jgm/pandoc/releases/download/2.19.2/pandoc-2.19.2-1-amd64.deb
+                    sudo dpkg -i pandoc-2.19.2-1-amd64.deb
+
+      - run:
+          name: Install tex
+          command: |
+                    sudo apt-get install -y texlive
+                    sudo apt-get install -y texlive-latex-extra
+                    sudo apt-get install -y texlive-xetex
+                    sudo apt-get install -y dvipng
+          
+      - run:
+          name: Install 7z, unrar
+          command: |
+                    sudo apt-get install -y p7zip-full
+          
+      - run:
+          name: Install InkScape
+          command: |
+                    sudo apt-get install -y inkscape
+          
+      - run:
+          name: Install graphviz
+          command: |
+                    sudo apt-get install -y graphviz
+          
+      - run:
+          name: install dependencies
+          command: |
+                    python -m pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v2-dependencies-{{ checksum "requirements.txt" }}
+        
+      - run:
+          name: gcc version
+          command: |
+            gcc --version
+
+      - run:
+          name: compile and build
+          command: |
+                    python setup.py build_ext --inplace
+
+      - run:
+          name: run tests
+          command: |
+                    python setup.py unittests
+
+      - run:
+          name: wheel
+          command: |
+                    python setup.py bdist_wheel
+                    mkdir -p test-reports/dist
+                    cp dist/*.whl test-reports/dist
+                    mkdir -p test-reports/src
+                    cp -r  mloptonnx test-reports/src
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports

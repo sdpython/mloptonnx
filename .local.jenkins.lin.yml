@@ -1,0 +1,29 @@
+
+language: python
+
+python:
+  - { PATH: "{{Python39}}", VERSION: 3.9, DIST: std, PYINT: python3.9 }
+  
+virtualenv:
+  - path: {{ospathjoin(root_path, pickname("$NAME_JENKINS", project_name + "_$VERSION_$DIST_$NAME"), "_venv")}}
+  
+install:
+  - $PYINT -m pip install --upgrade pip
+  - $PYINT -m pip install --upgrade --no-cache-dir --no-deps --index http://localhost:8067/simple/ jyquickhelper pyquickhelper --extra-index-url=https://pypi.python.org/simple/
+  - $PYINT -m pip install -r requirements.txt
+  - $PYINT --version
+  - $PYINT -m pip freeze
+
+before_script:
+  - $PYINT -u setup.py build_ext --inplace
+
+script:
+  - { CMD: "$PYINT -u setup.py unittests --covtoken=5091a257-f079-417e-af3b-dc425ddda031", NAME: "UT" }
+
+after_script:
+  - $PYINT -u setup.py bdist_wheel
+  - cp dist/*.whl {{root_path}}/../local_pypi/local_pypi_server
+
+documentation:
+  - if [ ${NAME} == "UT" ] then $PYINT -u setup.py build_sphinx --layout=html fi
+  - if [ ${NAME} == "UT" and ${VERSION} == "3.9" ] then cp -R -f _doc/sphinxdoc/build/html dist/html fi

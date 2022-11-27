@@ -1,0 +1,17 @@
+autopep8
+coverage
+Cython
+jupyter
+jyquickhelper
+matplotlib
+nbconvert
+numpy>=1.23
+onnx>=1.12
+pandas>=1.0
+pillow
+pylint>=2.14.0
+pyquickhelper>=1.11.3747
+pyquicksetup
+scipy
+sphinx
+wheel

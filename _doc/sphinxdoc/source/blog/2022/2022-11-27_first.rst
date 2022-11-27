@@ -1,0 +1,8 @@
+
+.. blogpost::
+    :title: First blog
+    :keywords: first blog
+    :date: 2022-11-27
+    :categories: C#, DLL
+
+    First blog
