@@ -4,7 +4,8 @@
 import unittest
 from pyquickhelper.pycode import ExtTestCase
 import numpy
-from mloptonnx.experimentation.numpyx import add_eye_inplace
+from mloptonnx.experimentation.numpyx import (  # pylint: disable=E0611
+    add_eye_inplace)
 
 
 class TestNumpyx(ExtTestCase):
