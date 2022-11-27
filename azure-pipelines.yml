@@ -29,13 +29,13 @@ jobs:
   - script: |
       python -m pip install cibuildwheel
       export CIBW_MANYLINUX_X86_64_IMAGE="manylinux_2_24"
-      export CIBW_BEFORE_BUILD="pip install pybind11 cython numpy scipy pyquickhelper onnx"
-      export CIBW_BUILD="cp310-manylinux_x86_64 cp311-manylinux_x86_64"
+      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx"
+      export CIBW_BUILD="cp310-manylinux_x86_64"
       python -m cibuildwheel --output-dir dist/wheelhouse310 --platform linux
     displayName: 'Build Package manylinux_x_y_py310'
   - script: |
       export CIBW_MANYLINUX_X86_64_IMAGE="manylinux2014"
-      export CIBW_BEFORE_BUILD="pip install pybind11 cython numpy scipy pyquickhelper onnx"
+      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx"
       export CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux2014_x86_64:latest
       export CIBW_BUILD="cp38-manylinux_x86_64 cp39-manylinux_x86_64"
       python -m cibuildwheel --output-dir dist/wheelhouse --platform linux
@@ -72,8 +72,8 @@ jobs:
     displayName: 'Runs Unit Tests'
   - script: |
       python -m pip install cibuildwheel
-      set CIBW_BEFORE_BUILD=pip install pybind11 cython numpy scipy pyquickhelper onnx
-      set CIBW_BUILD=cp38-win_amd64 cp39-win_amd64 cp310-win_amd64 cp311-win_amd64
+      set CIBW_BEFORE_BUILD=pip install cython numpy scipy pyquickhelper onnx
+      set CIBW_BUILD=cp38-win_amd64 cp39-win_amd64 cp310-win_amd64
       python -m cibuildwheel --output-dir dist/wheelhouse
     displayName: 'Build Package many'
   - task: PublishPipelineArtifact@0
@@ -117,8 +117,8 @@ jobs:
     displayName: Take ownership of conda installation
   - bash: conda install -y -c conda-forge numpy scipy
     displayName: Install numpy scipy
-  - bash: conda install -y -c conda-forge llvmlite numba pybind11
-    displayName: Install llvmlite numba pybind11
+  - bash: conda install -y -c conda-forge llvmlite numba
+    displayName: Install llvmlite numba
   - script: pip install -r requirements.txt
     displayName: 'Install Requirements'
   - script: |
@@ -129,8 +129,8 @@ jobs:
     displayName: 'Runs Unit Tests'
   - script: |
       python -m pip install cibuildwheel
-      export CIBW_BEFORE_BUILD="pip install pybind11 cython numpy scipy pyquickhelper pyquicksetup onnx"
-      export CIBW_BUILD="cp39-macosx_x86_64 cp310-macosx_x86_64 cp311-macosx_x86_64"
+      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper pyquicksetup onnx"
+      export CIBW_BUILD="cp39-macosx_x86_64 cp310-macosx_x86_64"
       export CIBW_ENVIRONMENT="MACOSX_DEPLOYMENT_TARGET=10.13"
       export CC=gcc
       export CXX=g++
