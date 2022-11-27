@@ -17,8 +17,8 @@ readme = 'README.rst'
 history = "HISTORY.rst"
 requirements = None
 
-KEYWORDS = [project_var_name, 'Xavier Dupré', 'teachings']
-DESCRIPTION = """Module with C functions. No precise purpose yet."""
+KEYWORDS = [project_var_name, 'Xavier Dupré', 'ONNX', 'onnxruntime']
+DESCRIPTION = """Experimentation around ONNX."""
 CLASSIFIERS = [
     'Programming Language :: Python :: 3',
     'Intended Audience :: Developers',
@@ -36,7 +36,10 @@ CLASSIFIERS = [
 packages = find_packages()
 package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
-    project_var_name + ".experimentation": ["*.cpp", "*.hpp", "*.pyx", "*.pyd"],
+    project_var_name + ".experimentation": [
+        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so"],
+    project_var_name + ".experimentation.ortapi": [
+        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so"],
 }
 
 
@@ -86,6 +89,7 @@ def get_compile_args():
 
 def get_extensions():
     import numpy
+    this = os.path.abspath(os.path.dirname(__file__))
     root = os.path.abspath(os.path.dirname(__file__))
     (libraries_thread, extra_compile_args_numbers,
      extra_compile_args_bench, extra_compile_args_thread,
@@ -96,7 +100,22 @@ def get_extensions():
         f"mloptonnx.experimentation.{name}",
         [f'mloptonnx/experimentation/{name}.pyx'],
         include_dirs=[numpy.get_include()],
-        extra_compile_args=["-O3"],
+        # extra_compile_args=["-O3"],
+        define_macros=define_macros,
+        language="c++")
+
+    name = 'ov'
+    ext_numpyx = Extension(
+        f"mloptonnx.experimentation.{name}",
+        [f'mloptonnx/experimentation/{name}.pyx',
+         'mloptonnx/experimentation/ort_interface.cpp'],
+        include_dirs=[
+            numpy.get_include(),
+            'mloptonnx/experimentation'],
+        libraries=[
+            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime.lib'),
+            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime_providers_shared.lib')],
+        # extra_compile_args=["-O3"],
         define_macros=define_macros,
         language="c++")
 
