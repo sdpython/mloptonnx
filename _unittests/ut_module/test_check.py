@@ -2,7 +2,6 @@
 @brief      test log(time=0s)
 """
 import unittest
-import io
 from pyquickhelper.pycode import ExtTestCase
 from mloptonnx import check
 

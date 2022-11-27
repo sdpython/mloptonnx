@@ -13,7 +13,7 @@ class TestCodeStyle(ExtTestCase):
     def test_style_src(self):
         thi = os.path.abspath(os.path.dirname(__file__))
         src_ = os.path.normpath(os.path.join(
-            thi, "..", "..", "cpyquickhelper"))
+            thi, "..", "..", "mloptonnx"))
         check_pep8(src_, fLOG=fLOG,
                    pylint_ignore=('C0103', 'C1801', 'R1705', 'W0108', 'W0613',
                                   'W0212', 'C0209'),

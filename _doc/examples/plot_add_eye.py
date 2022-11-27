@@ -46,14 +46,14 @@ for i in tqdm([1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]):
     for _ in range(r):
         M += numpy.identity(i)
     end = time.perf_counter() - begin
-    
+
     obs = {'N': i, 'time_numpy': end / r}
 
     begin = time.perf_counter()
     for _ in range(r):
         add_eye_inplace(M)
     end = time.perf_counter() - begin
-    
+
     obs.update({'time_add_eye_inplace': end / r})
     data.append(obs)
 
