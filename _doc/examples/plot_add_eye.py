@@ -37,23 +37,24 @@ assert_allclose(m1, m)
 # =========
 
 
-repeat = 100
+repeat = 1000
 data = []
 for i in tqdm([1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]):
+    r = int(repeat / i * 100)
     M = numpy.random.randn(i, i).astype(numpy.float64)
     begin = time.perf_counter()
-    for _ in range(repeat):
+    for _ in range(r):
         M += numpy.identity(i)
     end = time.perf_counter() - begin
     
-    obs = {'N': i, 'time_numpy': end}
+    obs = {'N': i, 'time_numpy': end / r}
 
     begin = time.perf_counter()
-    for _ in range(repeat):
+    for _ in range(r):
         add_eye_inplace(M)
     end = time.perf_counter() - begin
     
-    obs.update({'time_add_eye_inplace': end})
+    obs.update({'time_add_eye_inplace': end / r})
     data.append(obs)
 
 df = DataFrame(data).set_index('N')
@@ -74,4 +75,4 @@ df[["ratio"]].plot(ax=ax[1], title="ratio, lower is better", logx=True)
 # A custom function may be worth implementing where the operator
 # to do does not involve contiguous portions of arrays.
 
-plt.show()
+# plt.show()
