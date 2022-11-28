@@ -112,11 +112,12 @@ def get_extensions():
          'mloptonnx/experimentation/ort_interface.cpp'],
         include_dirs=[
             numpy.get_include(),
-            'mloptonnx/experimentation',
-            'mloptonnx/experimentation/onnxruntime/include',
+            os.path.join(this, 'mloptonnx', 'experimentation'),
+            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'include'),
         ],
-        libraries=[
-            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'lib', '*.so*'),
+        libraries=["libonnxruntime"],
+        library_dirs=[
+            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'lib'),
         ],
         # extra_compile_args=["-O3"],
         define_macros=define_macros,

@@ -15,6 +15,7 @@ from numpy cimport int64_t
 cimport cython
 numpy.import_array()
 
+
 cdef extern from "ort_interface.h":
     
     cdef void OrtInitialize()
