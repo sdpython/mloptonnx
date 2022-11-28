@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include "ort_interface.h"
-#include "ortapi/onnxruntime_cxx_api.h"
+#include "onnxruntime_cxx_api.h"
 #include "make_string.h"
 
 //#pragma comment(lib, "user32.lib")

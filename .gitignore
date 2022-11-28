@@ -7,6 +7,7 @@
 .metadata
 bin/
 tmp/
+_temp/
 _virtualenv/
 *.tmp
 *.bak
@@ -267,6 +268,8 @@ _doc/sphinxdoc/source/mloptonnx
 _doc/sphinxdoc/source/HISTORY.rst
 _doc/sphinxdoc/source/nbcov*.png
 _doc/sphinxdoc/source/phdoc_static/viz.js
+mloptonnx/experimentation/*.so
 mloptonnx/experimentation/*.dll
 mloptonnx/experimentation/*.lib
+mloptonnx/experimentation/onnxruntime/*
 mloptonnx/experimentation/ov.cpp

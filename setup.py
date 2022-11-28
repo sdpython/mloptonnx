@@ -38,8 +38,9 @@ package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
     project_var_name + ".experimentation": [
         "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so"],
-    project_var_name + ".experimentation.ortapi": [
-        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so"],
+    project_var_name + ".experimentation.onnxruntime": ["*.*"],
+    project_var_name + ".experimentation.onnxruntime.include": ["*.*"],
+    project_var_name + ".experimentation.onnxruntime.lib": ["*.*"],
 }
 
 
@@ -111,10 +112,12 @@ def get_extensions():
          'mloptonnx/experimentation/ort_interface.cpp'],
         include_dirs=[
             numpy.get_include(),
-            'mloptonnx/experimentation'],
+            'mloptonnx/experimentation',
+            'mloptonnx/experimentation/onnxruntime/include',
+        ],
         libraries=[
-            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime.lib'),
-            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime_providers_shared.lib')],
+            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'lib', '*.so*'),
+        ],
         # extra_compile_args=["-O3"],
         define_macros=define_macros,
         language="c++")
