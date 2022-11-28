@@ -23,6 +23,7 @@ Ort::Env& GetOrtEnv() {
     return env;
 }
 
+
 void OrtInitialize() {
     GetApi();
     GetOrtEnv();
