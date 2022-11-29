@@ -11,5 +11,7 @@ if "mloptonnx" not in os.environ.get("LD_LIBRARY_PATH", ""):
     existing = os.environ.get("LD_LIBRARY_PATH", "")
     dirname = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                            "onnxruntime", "lib")
-    os.environ["LD_LIBRARY_PATH"] = f"{existing}{sep}{dirname}"
-    print("***", [os.environ["LD_LIBRARY_PATH"]])
+    if existing:
+        os.environ["LD_LIBRARY_PATH"] = f"{existing}{sep}{dirname}"
+    else:
+        os.environ["LD_LIBRARY_PATH"] = dirname

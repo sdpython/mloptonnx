@@ -23,10 +23,6 @@ cdef extern from "ort_interface.h":
     cdef int _ORT_API_VERSION()
 
 
-def ORT_API_VERSION():
-    return _ORT_API_VERSION()
-    
-
 def initialize_onnxruntime():
     """
     Initializes :epkg:`onnxruntime` C API.
@@ -37,3 +33,7 @@ def initialize_onnxruntime():
     else:
         cdll.LoadLibrary(os.path.join(this, "onnxruntime", "lib", "libonnxruntime.so"))
     OrtInitialize()
+
+
+def ORT_API_VERSION():
+    return _ORT_API_VERSION()

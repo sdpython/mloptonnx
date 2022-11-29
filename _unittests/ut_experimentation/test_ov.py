@@ -26,8 +26,9 @@ class TestOv(ExtTestCase):
         self.assertIsInstance(res, CDLL)
         self.assertNotEmpty(res.OrtGetApiBase)
 
-    def test_ORT_API_VERSION(self):
-        from mloptonnx.experimentation.ov import ORT_API_VERSION
+    def test_zORT_API_VERSION(self):
+        from mloptonnx.experimentation.ov import initialize_onnxruntime, ORT_API_VERSION
+        initialize_onnxruntime()
         vers = ORT_API_VERSION()
         self.assertEqual(vers, 10)
 
