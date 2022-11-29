@@ -1,6 +1,7 @@
 """
 @brief      test log(time=4s)
 """
+# pylint: disable=E0611
 import os
 import sys
 from ctypes import cdll, CDLL
@@ -19,7 +20,8 @@ class TestOv(ExtTestCase):
             res = cdll.LoadLibrary("onnxruntime.dll")
         else:
             res = cdll.LoadLibrary(
-                os.path.join(this, "onnxruntime", "lib",
+                os.path.join(
+                    this, "onnxruntime", "lib",
                     "libonnxruntime.so.1.13.1"))
         self.assertIsInstance(res, CDLL)
         self.assertNotEmpty(res.OrtGetApiBase)
@@ -30,7 +32,7 @@ class TestOv(ExtTestCase):
         self.assertEqual(vers, 10)
 
     def test_initialize(self):
-        from mloptonnx.experimentation.ov import initialize_onnxruntime  # pylint: disable=E0611
+        from mloptonnx.experimentation.ov import initialize_onnxruntime
         initialize_onnxruntime()
 
 

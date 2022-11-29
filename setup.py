@@ -95,22 +95,25 @@ def get_extensions():
         extra_link_args=extra_link_args)
 
     name = 'ov'
-    dirlib = os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'lib')
+    dirlib = os.path.join(this, 'mloptonnx', 'experimentation',
+                          'onnxruntime', 'lib')
+    dirinclude = os.path.join(this, 'mloptonnx', 'experimentation',
+                              'onnxruntime', 'include')
     
     if sys.platform.startswith("win"):
         libraries = ["onnxruntime", "onnxruntime_providers_shared"]
     elif sys.platform == "darwin":
         raise NotImplementedError()
     else:
-        libraries = ["libonnxruntime"]
+        libraries = ["onnxruntime"]
+
     ext_ov = Extension(
         f"mloptonnx.experimentation.{name}",
         [f'mloptonnx/experimentation/{name}.pyx',
          'mloptonnx/experimentation/ort_interface.cc'],
         include_dirs=[
-            numpy.get_include(),
+            numpy.get_include(), dirinclude,
             os.path.join(this, 'mloptonnx', 'experimentation'),
-            os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'include'),
         ],
         libraries=libraries,
         library_dirs=[dirlib],
@@ -167,6 +170,9 @@ class build_ext_subclass(build_ext):
         version = "1.13.1"
         if not os.path.exists("build"):
             os.mkdir("build")
+        dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
+        if not os.path.exists(dest):
+            os.mkdir(dest)
 
         if sys.platform.startswith("win"):
             from pyquickhelper.filehelper import synchronize_folder
@@ -182,7 +188,6 @@ class build_ext_subclass(build_ext):
                 with urlopen(url) as f:
                     with open(filename, "wb") as g:
                         g.write(f.read())
-            dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
             if not os.path.exists(os.path.join(dest, "__init__.py")):
                 # unzip
                 if self.verbose:
@@ -190,8 +195,6 @@ class build_ext_subclass(build_ext):
                 with zipfile.ZipFile(filename, 'r') as zip_ref:
                     zip_ref.extractall("build")                
                 # copy                
-                if not os.path.exists(dest):
-                    os.mkdir(dest)
                 if self.verbose:
                     print(f"copy onnxruntime")
                     synchronize_folder(dirname, dest, fLOG=print)
@@ -222,9 +225,6 @@ class build_ext_subclass(build_ext):
                 with tarfile.open(filename, 'r:gz') as f:
                     f.extractall(path="build")
                 # copy
-                dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
-                if not os.path.exists(dest):
-                    os.mkdir(dest)
                 if self.verbose:
                     print(f"copy onnxruntime")
                     synchronize_folder(dirname, dest, fLOG=print)
