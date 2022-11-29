@@ -12,14 +12,22 @@ class TestOv(ExtTestCase):
 
     def test_dll(self):
         this = os.path.normpath(os.path.abspath(os.path.join(
-            os.path.dirname(__file__), "..", "..", "mloptonnx", "experimentation")))
+            os.path.dirname(__file__),
+            "..", "..", "mloptonnx",
+            "experimentation")))
         if sys.platform == "win32":
             res = cdll.LoadLibrary("onnxruntime.dll")
         else:
-            res = cdll.LoadLibrary(os.path.join(this, "onnxruntime", "lib", "libonnxruntime.so.1.13.1"))
+            res = cdll.LoadLibrary(
+                os.path.join(this, "onnxruntime", "lib",
+                    "libonnxruntime.so.1.13.1"))
         self.assertIsInstance(res, CDLL)
         self.assertNotEmpty(res.OrtGetApiBase)
 
+    def test_ORT_API_VERSION(self):
+        from mloptonnx.experimentation.ov import ORT_API_VERSION
+        vers = ORT_API_VERSION()
+        self.assertEqual(vers, 10)
 
     def test_initialize(self):
         from mloptonnx.experimentation.ov import initialize_onnxruntime  # pylint: disable=E0611
@@ -27,4 +35,4 @@ class TestOv(ExtTestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

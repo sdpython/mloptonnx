@@ -5,6 +5,7 @@ import platform
 import tarfile
 from urllib.request import urlopen
 import warnings
+import zipfile
 from setuptools import setup, Extension, find_packages, Command
 from setuptools.command.build_ext import build_ext
 from pyquicksetup import read_version, read_readme, default_cmdclass
@@ -40,7 +41,7 @@ packages = find_packages()
 package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
     project_var_name + ".experimentation": [
-        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so"],
+        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so", "*.cc"],
     project_var_name + ".experimentation.onnxruntime": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.include": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.lib": ["*.*"],
@@ -52,6 +53,7 @@ def get_compile_args():
     if sys.platform.startswith("win"):
         libraries_thread = ['kernel32']
         extra_compile_args = ['/EHsc', '/O2', '/Gy', '/openmp']
+        extra_link_args = None
         define_macros = [('USE_OPENMP', None)]
     elif sys.platform.startswith("darwin"):
         # see https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/_build_utils/openmp_helpers.py#L30
@@ -94,16 +96,23 @@ def get_extensions():
 
     name = 'ov'
     dirlib = os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'lib')
-    ext_numpyx = Extension(
+    
+    if sys.platform.startswith("win"):
+        libraries = ["onnxruntime", "onnxruntime_providers_shared"]
+    elif sys.platform == "darwin":
+        raise NotImplementedError()
+    else:
+        libraries = ["libonnxruntime"]
+    ext_ov = Extension(
         f"mloptonnx.experimentation.{name}",
         [f'mloptonnx/experimentation/{name}.pyx',
-         'mloptonnx/experimentation/ort_interface.cpp'],
+         'mloptonnx/experimentation/ort_interface.cc'],
         include_dirs=[
             numpy.get_include(),
             os.path.join(this, 'mloptonnx', 'experimentation'),
             os.path.join(this, 'mloptonnx', 'experimentation', 'onnxruntime', 'include'),
         ],
-        libraries=["libonnxruntime"],
+        libraries=libraries,
         library_dirs=[dirlib],
         # extra_compile_args=["-O3"],
         define_macros=define_macros,
@@ -121,6 +130,7 @@ def get_extensions():
         from Cython.Build import cythonize
         ext_modules = cythonize([
             ext_numpyx,
+            ext_ov,
         ], compiler_directives=opts)
     except ImportError:
         # Cython is not installed.
@@ -132,14 +142,65 @@ def get_extensions():
 
 
 class build_ext_subclass(build_ext):
+
+    def set_ORT_API_VERSION(self, version=10):
+        filename = os.path.join("mloptonnx", "experimentation",
+                                "onnxruntime", "include",
+                                "onnxruntime_c_api.h")
+        with open(filename, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        new_lines = []
+        modified = False
+        for line in lines:
+            if line.startswith("#define ORT_API_VERSION "):
+                new_lines.append(f"#define ORT_API_VERSION {version}\n")
+                modified = True
+                continue
+            new_lines.append(line)
+        if not modified:
+            raise RuntimeError(
+                f"No line with '#define ORT_API_VERSION' was found in {filename!r}.")
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("".join(new_lines))
+
     def build_extensions(self):
         version = "1.13.1"
         if not os.path.exists("build"):
             os.mkdir("build")
+
         if sys.platform.startswith("win"):
-            raise NotImplementedError()
+            from pyquickhelper.filehelper import synchronize_folder
+            # download
+            url = (f"https://github.com/microsoft/onnxruntime/releases/download/"
+                   f"v{version}/onnxruntime-win-x64-{version}.zip")
+            name = url.split('/')[-1]
+            filename = os.path.join("build", name)
+            dirname = os.path.splitext(filename)[0]
+            if not os.path.exists(filename):
+                if self.verbose:
+                    print(f"download {url!r}")
+                with urlopen(url) as f:
+                    with open(filename, "wb") as g:
+                        g.write(f.read())
+            dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
+            if not os.path.exists(os.path.join(dest, "__init__.py")):
+                # unzip
+                if self.verbose:
+                    print(f"unzip {filename!r}")
+                with zipfile.ZipFile(filename, 'r') as zip_ref:
+                    zip_ref.extractall("build")                
+                # copy                
+                if not os.path.exists(dest):
+                    os.mkdir(dest)
+                if self.verbose:
+                    print(f"copy onnxruntime")
+                    synchronize_folder(dirname, dest, fLOG=print)
+                else:
+                    synchronize_folder(dirname, dest)
+
         elif sys.platform.startswith("darwin"):
             raise NotImplementedError()
+
         else:
             from pyquickhelper.filehelper import synchronize_folder
             # download
@@ -154,32 +215,43 @@ class build_ext_subclass(build_ext):
                 with urlopen(url) as f:
                     with open(filename, "wb") as g:
                         g.write(f.read())
-            # untar
-            if self.verbose:
-                print(f"untar {filename!r}")
-            with tarfile.open(filename, 'r:gz') as f:
-                f.extractall(path="build")
-            # copy
-            dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
-            if not os.path.exists(dest):
-                os.mkdir(dest)
-            if self.verbose:
-                print(f"copy onnxruntime")
-                synchronize_folder(dirname, dest, fLOG=print)
-            else:
-                synchronize_folder(dirname, dest)
-            # writing __init__.py
-            for d in [
-                    os.path.join("mloptonnx", "experimentation", "onnxruntime"),
-                    os.path.join("mloptonnx", "experimentation", "onnxruntime", "lib"),
-                    os.path.join("mloptonnx", "experimentation", "onnxruntime", "include"),
-                ]:
-                name = os.path.join(d, "__init__.py")
+            if not os.path.exists(os.path.join(dest, "__init__.py")):
+                # untar
                 if self.verbose:
-                    print(f"create file {name!r}")
-                with open(name, "w") as f:
-                    pass
-            build_ext.build_extensions(self)
+                    print(f"untar {filename!r}")
+                with tarfile.open(filename, 'r:gz') as f:
+                    f.extractall(path="build")
+                # copy
+                dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
+                if not os.path.exists(dest):
+                    os.mkdir(dest)
+                if self.verbose:
+                    print(f"copy onnxruntime")
+                    synchronize_folder(dirname, dest, fLOG=print)
+                else:
+                    synchronize_folder(dirname, dest)
+
+        # writing __init__.py
+        if self.verbose:
+            print("create __init__.py")
+        for d in [
+                os.path.join("mloptonnx", "experimentation", "onnxruntime"),
+                os.path.join("mloptonnx", "experimentation", "onnxruntime", "lib"),
+                os.path.join("mloptonnx", "experimentation", "onnxruntime", "include"),
+            ]:
+            name = os.path.join(d, "__init__.py")
+            if self.verbose:
+                print(f"create file {name!r}")
+            with open(name, "w") as f:
+                pass
+
+        # fix ORT_API_VERSION
+        if self.verbose:
+            print("change ORT_API_VERSION")
+        self.set_ORT_API_VERSION(10)
+
+        # complete the build
+        build_ext.build_extensions(self)
 
 try:
     ext_modules = get_extensions()
