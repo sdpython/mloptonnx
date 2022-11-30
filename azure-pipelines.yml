@@ -119,13 +119,13 @@ jobs:
     displayName: Install numpy scipy
   - bash: conda install -y -c conda-forge llvmlite numba
     displayName: Install llvmlite numba
-  - script: pip install -r requirements.txt
-    displayName: 'Install Requirements'
-  - script: |
-         python setup.py build_ext --inplace
-    displayName: 'Build package inplace'
-  - script: python -u setup.py unittests
-    displayName: 'Runs Unit Tests'
+#   - script: pip install -r requirements.txt
+#     displayName: 'Install Requirements'
+#   - script: |
+#          python setup.py build_ext --inplace
+#     displayName: 'Build package inplace'
+#   - script: python -u setup.py unittests
+#     displayName: 'Runs Unit Tests'
 #   - script: |
 #       python -m pip install cibuildwheel
 #       export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper pyquicksetup onnx && python setup.py build_ext --inplace"
