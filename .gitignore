@@ -274,3 +274,4 @@ mloptonnx/experimentation/*.dll
 mloptonnx/experimentation/*.lib
 mloptonnx/experimentation/onnxruntime/*
 mloptonnx/experimentation/ov.cpp
+mloptonnx/experimentation/ort_wrapper.cpp

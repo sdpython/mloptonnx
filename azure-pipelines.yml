@@ -68,7 +68,7 @@ jobs:
     displayName: 'Build inplace'
   - script: python setup.py install
     displayName: 'install the package'
-  - script: pytest -v -v  _unittests --ignore-glob=**/test_run_notebooks.py
+  - script: python setup.py unittests
     displayName: 'Runs Unit Tests'
   - script: |
       python -m pip install cibuildwheel

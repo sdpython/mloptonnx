@@ -42,12 +42,12 @@ package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
     project_var_name + ".experimentation": [
         "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll",
-        "*.so", "*.cc", "*.dylib"],
+        "*.so*", "*.cc", "*.dylib*"],
     project_var_name + ".experimentation.onnxruntime": [
         "*.txt", "*.md", "LICENSE", "VERSION_NUMBER", "GIT_COMMIT_ID"],
     project_var_name + ".experimentation.onnxruntime.include": ["*.h"],
     project_var_name + ".experimentation.onnxruntime.lib": [
-        "*.dll", "*.so", "*.dylib"],
+        "*.dll", "*.so*", "*.dylib*"],
 }
 
 
@@ -97,7 +97,7 @@ def get_extensions():
         extra_compile_args=extra_compile_args,
         extra_link_args=extra_link_args)
 
-    name = 'ov'
+    name = 'ort_wrapper'
     dirlib = os.path.join(this, 'mloptonnx', 'experimentation',
                           'onnxruntime', 'lib')
     dirinclude = os.path.join(this, 'mloptonnx', 'experimentation',
@@ -170,6 +170,7 @@ class build_ext_subclass(build_ext):
             f.write("".join(new_lines))
 
     def build_extensions(self):
+        from pyquickhelper.filehelper import synchronize_folder
         version = "1.13.1"
         dirbuild = "_build"
         if not os.path.exists(dirbuild):
@@ -179,7 +180,6 @@ class build_ext_subclass(build_ext):
             os.mkdir(dest)
 
         if sys.platform.startswith("win"):
-            from pyquickhelper.filehelper import synchronize_folder
             # download
             url = (f"https://github.com/microsoft/onnxruntime/releases/download/"
                    f"v{version}/onnxruntime-win-x64-{version}.zip")

@@ -1,9 +1,7 @@
-#include "onnxruntime_c_api.h"
-#include "onnxruntime_cxx_api.h"
 #include <stdexcept>
 #include <iostream>
-#include "ort_interface.h"
 #include "make_string.h"
+#include "ort_interface.h"
 
 //#pragma comment(lib, "user32.lib")
 //#pragma comment(lib, "gdi32.lib")
