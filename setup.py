@@ -7,7 +7,9 @@ from urllib.request import urlopen
 import warnings
 import zipfile
 from setuptools import setup, Extension, find_packages, Command
+from setuptools.command.build import build
 from setuptools.command.build_ext import build_ext
+from setuptools.command.build_py import build_py
 from pyquicksetup import read_version, read_readme, default_cmdclass
 
 #########
@@ -147,7 +149,7 @@ def get_extensions():
     return ext_modules
 
 
-class build_ext_subclass(build_ext):
+class _build_subclass:
 
     def set_ORT_API_VERSION(self, version=10):
         filename = os.path.join("mloptonnx", "experimentation",
@@ -169,7 +171,7 @@ class build_ext_subclass(build_ext):
         with open(filename, "w", encoding="utf-8") as f:
             f.write("".join(new_lines))
 
-    def build_extensions(self):
+    def _build_extensions(self, parent):
         from pyquickhelper.filehelper import synchronize_folder
         version = "1.13.1"
         dirbuild = "_build"
@@ -278,7 +280,19 @@ class build_ext_subclass(build_ext):
         self.set_ORT_API_VERSION(10)
 
         # complete the build
-        build_ext.build_extensions(self)
+        parent.build_extensions(self)
+
+
+class build_ext_subclass(build_ext, _build_subclass):
+    def build_extensions(self):
+        _build_subclass._build_extensions(self, build_ext)
+
+
+class build_py_subclass(build_py):
+    def run(self):
+        self.run_command("build_ext")
+        return super().run()
+
 
 try:
     ext_modules = get_extensions()
@@ -289,7 +303,10 @@ except ImportError as e:
 
 
 commands = default_cmdclass()
-commands.update({'build_ext': build_ext_subclass})
+commands.update({
+    'build_py': build_py_subclass,
+    'build_ext': build_ext_subclass,
+})
 
 setup(
     name=project_var_name,
