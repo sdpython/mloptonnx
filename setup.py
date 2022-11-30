@@ -41,7 +41,8 @@ packages = find_packages()
 package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
     project_var_name + ".experimentation": [
-        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so", "*.cc"],
+        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll",
+        "*.so", "*.cc", "*.dylib"],
     project_var_name + ".experimentation.onnxruntime": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.include": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.lib": ["*.*"],
@@ -168,8 +169,9 @@ class build_ext_subclass(build_ext):
 
     def build_extensions(self):
         version = "1.13.1"
-        if not os.path.exists("build"):
-            os.mkdir("build")
+        dirbuild = "_build"
+        if not os.path.exists(dirbuild):
+            os.mkdir(dirbuild)
         dest = os.path.join("mloptonnx", "experimentation", "onnxruntime")
         if not os.path.exists(dest):
             os.mkdir(dest)
@@ -180,7 +182,7 @@ class build_ext_subclass(build_ext):
             url = (f"https://github.com/microsoft/onnxruntime/releases/download/"
                    f"v{version}/onnxruntime-win-x64-{version}.zip")
             name = url.split('/')[-1]
-            filename = os.path.join("build", name)
+            filename = os.path.join(dirbuild, name)
             dirname = os.path.splitext(filename)[0]
             if not os.path.exists(filename):
                 if self.verbose:
@@ -193,7 +195,7 @@ class build_ext_subclass(build_ext):
                 if self.verbose:
                     print(f"unzip {filename!r}")
                 with zipfile.ZipFile(filename, 'r') as zip_ref:
-                    zip_ref.extractall("build")                
+                    zip_ref.extractall(dirbuild)                
                 # copy                
                 if self.verbose:
                     print(f"copy onnxruntime")
@@ -202,15 +204,11 @@ class build_ext_subclass(build_ext):
                     synchronize_folder(dirname, dest)
 
         elif sys.platform.startswith("darwin"):
-            raise NotImplementedError()
-
-        else:
-            from pyquickhelper.filehelper import synchronize_folder
-            # download
             url = (f"https://github.com/microsoft/onnxruntime/releases/download/"
-                   f"v{version}/onnxruntime-linux-x64-{version}.tgz")
+                   f"v{version}/onnxruntime-osx-universal2-{version}.tgz")
             name = url.split('/')[-1]
-            filename = os.path.join("build", name)
+            name = url.split('/')[-1]
+            filename = os.path.join(dirbuild, name)
             dirname = os.path.splitext(filename)[0]
             if not os.path.exists(filename):
                 if self.verbose:
@@ -223,7 +221,34 @@ class build_ext_subclass(build_ext):
                 if self.verbose:
                     print(f"untar {filename!r}")
                 with tarfile.open(filename, 'r:gz') as f:
-                    f.extractall(path="build")
+                    f.extractall(path=dirbuild)
+                # copy
+                if self.verbose:
+                    print(f"copy onnxruntime")
+                    synchronize_folder(dirname, dest, fLOG=print)
+                else:
+                    synchronize_folder(dirname, dest)
+
+        else:
+            from pyquickhelper.filehelper import synchronize_folder
+            # download
+            url = (f"https://github.com/microsoft/onnxruntime/releases/download/"
+                   f"v{version}/onnxruntime-linux-x64-{version}.tgz")
+            name = url.split('/')[-1]
+            filename = os.path.join(dirbuild, name)
+            dirname = os.path.splitext(filename)[0]
+            if not os.path.exists(filename):
+                if self.verbose:
+                    print(f"download {url!r}")
+                with urlopen(url) as f:
+                    with open(filename, "wb") as g:
+                        g.write(f.read())
+            if not os.path.exists(os.path.join(dest, "__init__.py")):
+                # untar
+                if self.verbose:
+                    print(f"untar {filename!r}")
+                with tarfile.open(filename, 'r:gz') as f:
+                    f.extractall(path=dirbuild)
                 # copy
                 if self.verbose:
                     print(f"copy onnxruntime")
