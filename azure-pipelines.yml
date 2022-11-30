@@ -26,24 +26,24 @@ jobs:
   - script: |
       python -u setup.py unittests
     displayName: 'Runs Unit Tests'
-  - script: |
-      python -m pip install cibuildwheel
-      export CIBW_MANYLINUX_X86_64_IMAGE="manylinux_2_24"
-      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx"
-      export CIBW_BUILD="cp310-manylinux_x86_64"
-      python -m cibuildwheel --output-dir dist/wheelhouse310 --platform linux
-    displayName: 'Build Package manylinux_x_y_py310'
-  - script: |
-      export CIBW_MANYLINUX_X86_64_IMAGE="manylinux2014"
-      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx"
-      export CIBW_MANYLINUX_X86_64_IMAGE=quay.io/pypa/manylinux2014_x86_64:latest
-      export CIBW_BUILD="cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-      python -m cibuildwheel --output-dir dist/wheelhouse --platform linux
-    displayName: 'Build Package manylinux2014'
-  - task: PublishPipelineArtifact@0
-    inputs:
-      artifactName: 'wheel-linux'
-      targetPath: 'dist'
+# ValueError: Cannot repair wheel, because required library "libonnxruntime.so.1.13.1" could not be located
+#   - script: |
+#       python -m pip install cibuildwheel
+#       export CIBW_MANYLINUX_X86_64_IMAGE="manylinux_2_24"
+#       export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx && python setup.py build_ext --inplace"
+#       export CIBW_BUILD="cp310-manylinux_x86_64"
+#       python -m cibuildwheel --output-dir dist/wheelhouse310 --platform linux
+#     displayName: 'Build Package manylinux_x_y_py310'
+#   - script: |
+#       export CIBW_MANYLINUX_X86_64_IMAGE="manylinux2014"
+#       export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper onnx && python setup.py build_ext --inplace"
+#       export CIBW_BUILD="cp38-manylinux_x86_64 cp39-manylinux_x86_64"
+#       python -m cibuildwheel --output-dir dist/wheelhouse --platform linux
+#     displayName: 'Build Package manylinux2014'
+#   - task: PublishPipelineArtifact@0
+#     inputs:
+#       artifactName: 'wheel-linux'
+#       targetPath: 'dist'
 
 - job: 'TestWindows'
   pool:
@@ -68,18 +68,18 @@ jobs:
     displayName: 'Build inplace'
   - script: python setup.py install
     displayName: 'install the package'
-  - script: pytest -v -v  _unittests --ignore-glob=**/test_run_notebooks.py
-    displayName: 'Runs Unit Tests'
-  - script: |
-      python -m pip install cibuildwheel
-      set CIBW_BEFORE_BUILD=pip install cython numpy scipy pyquickhelper onnx
-      set CIBW_BUILD=cp38-win_amd64 cp39-win_amd64 cp310-win_amd64
-      python -m cibuildwheel --output-dir dist/wheelhouse
-    displayName: 'Build Package many'
-  - task: PublishPipelineArtifact@0
-    inputs:
-      artifactName: 'wheel-windows'
-      targetPath: 'dist'
+#   - script: python setup.py unittests
+#     displayName: 'Runs Unit Tests'
+#   - script: |
+#       python -m pip install cibuildwheel
+#       set CIBW_BEFORE_BUILD=pip install cython numpy scipy pyquickhelper onnx & python setup.py build_ext --inplace
+#       set CIBW_BUILD=cp38-win_amd64 cp39-win_amd64 cp310-win_amd64
+#       python -m cibuildwheel --output-dir dist/wheelhouse
+#     displayName: 'Build Package many'
+#   - task: PublishPipelineArtifact@0
+#     inputs:
+#       artifactName: 'wheel-windows'
+#       targetPath: 'dist'
 
 - job: 'TestMac'
   pool:
@@ -119,25 +119,23 @@ jobs:
     displayName: Install numpy scipy
   - bash: conda install -y -c conda-forge llvmlite numba
     displayName: Install llvmlite numba
-  - script: pip install -r requirements.txt
-    displayName: 'Install Requirements'
-  - script: |
-         # export MACOSX_DEPLOYMENT_TARGET=10.13
-         python setup.py build_ext --inplace
-    displayName: 'Build package inplace'
-  - script: python -u setup.py unittests
-    displayName: 'Runs Unit Tests'
-  - script: |
-      python -m pip install cibuildwheel
-      export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper pyquicksetup onnx"
-      export CIBW_BUILD="cp39-macosx_x86_64 cp310-macosx_x86_64"
-      export CIBW_ENVIRONMENT="MACOSX_DEPLOYMENT_TARGET=10.13"
-      export CC=gcc
-      export CXX=g++
-      python -m cibuildwheel --output-dir dist/wheelhouse
-    continueOnError: true
-    displayName: 'Build Package many'
-  - task: PublishPipelineArtifact@0
-    inputs:
-      artifactName: 'wheel-mac'
-      targetPath: 'dist'
+#   - script: pip install -r requirements.txt
+#     displayName: 'Install Requirements'
+#   - script: |
+#          python setup.py build_ext --inplace
+#     displayName: 'Build package inplace'
+#   - script: python -u setup.py unittests
+#     displayName: 'Runs Unit Tests'
+#   - script: |
+#       python -m pip install cibuildwheel
+#       export CIBW_BEFORE_BUILD="pip install cython numpy scipy pyquickhelper pyquicksetup onnx && python setup.py build_ext --inplace"
+#       export CIBW_BUILD="cp39-macosx_x86_64 cp310-macosx_x86_64"
+#       export CC=gcc
+#       export CXX=g++
+#       python -m cibuildwheel --output-dir dist/wheelhouse
+#     continueOnError: true
+#     displayName: 'Build Package many'
+#   - task: PublishPipelineArtifact@0
+#     inputs:
+#       artifactName: 'wheel-mac'
+#       targetPath: 'dist'

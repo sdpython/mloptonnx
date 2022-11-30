@@ -7,6 +7,7 @@
 .metadata
 bin/
 tmp/
+_temp/
 _virtualenv/
 *.tmp
 *.bak
@@ -52,6 +53,7 @@ dummy.py
 [Rr]elease/
 x64/
 build/
+_build/
 [Bb]in/
 [Oo]bj/
 
@@ -241,7 +243,6 @@ _doc/sphinxdoc/source/gyexamples/*
 _doc/sphinxdoc/source/examples/*
 _doc/sphinxdoc/source/gallery/*
 _doc/sphinxdoc/source/gallerynb/*
-build_help.bat
 _doc/sphinxdoc/source/blog/*.rst
 _doc/sphinxdoc/source/blog/rss.xml
 _doc/sphinxdoc/source/phdoc_templates/*toc.html
@@ -260,25 +261,18 @@ _doc/sphinxdoc/require.js
 ex.*
 m.temp
 _doc/notebooks/*/.ipynb_checkpoints
-_doc/notebooks/nlp/frwiki-latest-all-titles-in-ns0
-_doc/notebooks/nlp/sample*.txt
-_doc/notebooks/nlp/completion.prof
-_doc/notebooks/nlp/profile.png
-_doc/notebooks/nlp/completion.dot
-_doc/notebooks/nlp/completion.png
-_doc/notebooks/nlp/completion.pstat
 _unittests/run_unittests.py.out
 *.err
 _doc/sphinxdoc/source/phdoc_static/style_notebook_snippet.css
 dist
-_doc/sphinxdoc/source/cpyquickhelper
+_doc/sphinxdoc/source/mloptonnx
 _doc/sphinxdoc/source/HISTORY.rst
 _doc/sphinxdoc/source/nbcov*.png
-cpyquickhelper/numbers/direct_blas_lapack.c
-_doc/sphinxdoc/source/_temp_custom_run_script_.py.pkl
-_doc/sphinxdoc/source/_temp_custom_run_script_.py
 _doc/sphinxdoc/source/phdoc_static/viz.js
-bb.bat
-cpyquickhelper/fastdata/fast_dict_cpy.c
-cpyquickhelper/fastdata/fast_dict_cpy.cpp
-_unittests/unittests.out
+mloptonnx/experimentation/*.so
+mloptonnx/experimentation/*.dll
+mloptonnx/experimentation/*.lib
+mloptonnx/experimentation/onnxruntime/*
+mloptonnx/experimentation/ov.cpp
+mloptonnx/experimentation/ort_wrapper.cpp
+mloptonnx/experimentation/numpyx.cpp
