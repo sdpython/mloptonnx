@@ -41,7 +41,7 @@ packages = find_packages()
 package_dir = {k: os.path.join('.', k.replace(".", "/")) for k in packages}
 package_data = {
     project_var_name + ".experimentation": [
-        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so", "*.cc"],
+        "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll", "*.so*", "*.cc"],
     project_var_name + ".experimentation.onnxruntime": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.include": ["*.*"],
     project_var_name + ".experimentation.onnxruntime.lib": ["*.*"],
