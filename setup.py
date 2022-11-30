@@ -7,7 +7,6 @@ from urllib.request import urlopen
 import warnings
 import zipfile
 from setuptools import setup, Extension, find_packages, Command
-from setuptools.command.build import build
 from setuptools.command.build_ext import build_ext
 from setuptools.command.build_py import build_py
 from pyquicksetup import read_version, read_readme, default_cmdclass
