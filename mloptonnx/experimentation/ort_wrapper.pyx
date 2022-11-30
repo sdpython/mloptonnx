@@ -17,21 +17,17 @@ cimport cython
 numpy.import_array()
 
 
-#cdef extern from "onnxruntime_cxx_api.h":
-#    
-#    cdef cppclass OrtDevice:
-#        
-#        OrtDevice()
-#        OrtDevice(int8_t, int8_t, int16_t)
-#        int8_t Type()
-#        int8_t MemType()
-#        int16_t Id()
-
-
 cdef extern from "ort_interface.h":
     
     cdef void OrtInitialize() except *
     cdef int _ORT_API_VERSION()
+
+    cdef cppclass ApiDevice:
+        int8_t type
+        int8_t mem_type
+        int16_t device_id
+        ApiDevice()
+        ApiDevice(int8_t, int8_t, int16_t)
 
 
 cdef class Device:
@@ -39,45 +35,38 @@ cdef class Device:
     Wraps :epkg:`C_OrtDevice`.
 
     :param t: device type
+        (`CPU`, `GPU`, `FPGA`, `NPU`)
     :param mem_type: memory type
+        (`DEFAULT`, `CUDA_PINNED`, `HIP_PINNED`, `CANN_PINNED`)
     :param device_id: device id
-    
-    ::
-
-      static const DeviceType CPU = 0;
-      static const DeviceType GPU = 1;  // Nvidia or AMD
-      static const DeviceType FPGA = 2;
-      static const DeviceType NPU = 3;  // Ascend
-
-      struct MemType {
-        // Pre-defined memory types.
-        static const MemoryType DEFAULT = 0;
-        static const MemoryType CUDA_PINNED = 1;
-        static const MemoryType HIP_PINNED = 2;
-        static const MemoryType CANN_PINNED = 3;
-      };    
     """
 
-    cdef int8_t type_
-    cdef int8_t mem_type_
-    cdef int8_t device_id_
-    
-    def __init__(self, t, mem_type, device_id):
-        self.type_ = t
-        self.mem_type_ = mem_type
-        self.device_id_ = device_id
+    CPU = 0
+    GPU = 1
+    FPGA = 2
+    NPU = 3
+
+    DEFAULT = 0
+    CUDA_PINNED = 1
+    HIP_PINNED = 2
+    CANN_PINNED = 3
+
+    cdef ApiDevice device
+
+    def __init__(self, t, mt, devid):
+        self.device = ApiDevice(t, mt, devid)
 
     @property
     def type(self):
-        return self.type_
+        return self.device.type
 
     @property
     def mem_type(self):
-        return self.mem_type_
+        return self.device.mem_type
 
     @property
     def device_id(self):
-        return self.device_id_
+        return self.device.device_id
 
 
 def initialize_onnxruntime():

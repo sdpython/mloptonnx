@@ -67,8 +67,8 @@ def get_compile_args():
         # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
         #                          -L/usr/local/opt/libomp/lib -lomp"
         libraries_thread = None
-        extra_compile_args = ['-mmacosx-version-min=10.7', '-fopenmp',  # '-lpthread',
-                              '-std=c++11', '-fpermissive']
+        extra_compile_args = ['-mmacosx-version-min=10.7', # '-fopenmp',  # '-lpthread',
+                              '-fpermissive']
         extra_link_args = ["-lomp"]
         define_macros = [('USE_OPENMP', None)]
     else:

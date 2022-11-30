@@ -37,3 +37,17 @@ void OrtInitialize() {
     GetApi();
     GetOrtEnv();
 }
+
+
+ApiDevice::ApiDevice() {
+    type = 0;
+    mem_type = 0;
+    device_id = 0;
+}
+
+
+ApiDevice::ApiDevice(int8_t t, int8_t mt, int16_t devid) {
+    type = t;
+    mem_type = mt;
+    device_id = devid;
+}

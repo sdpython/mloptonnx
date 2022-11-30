@@ -42,6 +42,10 @@ class TestOv(ExtTestCase):
         self.assertEqual(d.type, 1)
         self.assertEqual(d.mem_type, 2)
         self.assertEqual(d.device_id, 3)
+        d = Device(Device.CPU, Device.DEFAULT, 0)
+        self.assertEqual(d.type, 0)
+        self.assertEqual(d.mem_type, 0)
+        self.assertEqual(d.device_id, 0)
 
 
 if __name__ == "__main__":
