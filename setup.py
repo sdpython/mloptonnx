@@ -43,9 +43,11 @@ package_data = {
     project_var_name + ".experimentation": [
         "*.cpp", "*.hpp", "*.pyx", "*.pyd", "*.h", "*.dll",
         "*.so", "*.cc", "*.dylib"],
-    project_var_name + ".experimentation.onnxruntime": ["*.*"],
-    project_var_name + ".experimentation.onnxruntime.include": ["*.*"],
-    project_var_name + ".experimentation.onnxruntime.lib": ["*.*"],
+    project_var_name + ".experimentation.onnxruntime": [
+        "*.txt", "*.md", "LICENSE", "VERSION_NUMBER", "GIT_COMMIT_ID"],
+    project_var_name + ".experimentation.onnxruntime.include": ["*.h"],
+    project_var_name + ".experimentation.onnxruntime.lib": [
+        "*.dll", "*.so", "*.dylib"],
 }
 
 
@@ -104,7 +106,7 @@ def get_extensions():
     if sys.platform.startswith("win"):
         libraries = ["onnxruntime", "onnxruntime_providers_shared"]
     elif sys.platform == "darwin":
-        raise NotImplementedError()
+        libraries = ["onnxruntime"]
     else:
         libraries = ["onnxruntime"]
 
