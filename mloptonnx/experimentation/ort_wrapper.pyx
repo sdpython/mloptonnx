@@ -30,6 +30,22 @@ cdef extern from "ort_interface.h":
         ApiDevice(int8_t, int8_t, int16_t)
 
 
+def initialize_onnxruntime():
+    """
+    Initializes :epkg:`onnxruntime` C API.
+    """
+    this = os.path.join(os.path.dirname(__file__))
+    if sys.platform == "win32":
+        cdll.LoadLibrary("onnxruntime.dll")
+    else:
+        cdll.LoadLibrary(os.path.join(this, "onnxruntime", "lib", "libonnxruntime.so"))
+    OrtInitialize()
+
+
+def ORT_API_VERSION():
+    return _ORT_API_VERSION()
+
+
 cdef class Device:
     """
     Wraps :epkg:`C_OrtDevice`.
@@ -67,19 +83,3 @@ cdef class Device:
     @property
     def device_id(self):
         return self.device.device_id
-
-
-def initialize_onnxruntime():
-    """
-    Initializes :epkg:`onnxruntime` C API.
-    """
-    this = os.path.join(os.path.dirname(__file__))
-    if sys.platform == "win32":
-        cdll.LoadLibrary("onnxruntime.dll")
-    else:
-        cdll.LoadLibrary(os.path.join(this, "onnxruntime", "lib", "libonnxruntime.so"))
-    OrtInitialize()
-
-
-def ORT_API_VERSION():
-    return _ORT_API_VERSION()
