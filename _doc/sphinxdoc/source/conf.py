@@ -9,7 +9,7 @@ local_template = os.path.join(os.path.abspath(
     os.path.dirname(__file__)), "phdoc_templates")
 
 from pyquickhelper.helpgen.default_conf import set_sphinx_variables
-set_sphinx_variables(__file__, "mloptonnx", "Xavier Dupré", 2022,
+set_sphinx_variables(__file__, "mloptonnx", "Xavier Dupré", 2023,
                      "alabaster", alabaster.get_path(),
                      locals(), extlinks=dict(issue=(
                          'https://github.com/sdpython/mloptonnx/issues/%s',
@@ -18,7 +18,7 @@ set_sphinx_variables(__file__, "mloptonnx", "Xavier Dupré", 2022,
 
 blog_root = "http://www.xavierdupre.fr/app/mloptonnx/helpsphinx/"
 html_css_files = ['my-styles.css']
-html_logo = "phdoc_static/project_ico.png"
+html_logo = "_static/project_ico.png"
 html_sidebars = {}
 
 language = "en"
